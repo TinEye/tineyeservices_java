@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+
+Name: com/tineye/services
+Specification-Title: TinEye Services library
+Specification-Version: 1.2.1
+Specification-Vendor: Idee Inc.
+Implementation-Title: com.tineye.services
+Implementation-Version: 1.0
+Implementation-Vendor: Idee Inc.

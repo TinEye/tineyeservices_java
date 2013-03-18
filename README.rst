@@ -50,5 +50,5 @@ View `documentation <http://services.tineye.com/library/java/docs/>`_.
 Support
 -------
 
-Please send comments, recommendations, or bugs reports to support@tineye.com.
+Please send comments, recommendations, and bug reports to support@tineye.com.
 

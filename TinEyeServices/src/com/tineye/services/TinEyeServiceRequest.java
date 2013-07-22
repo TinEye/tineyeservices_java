@@ -11,12 +11,14 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.log4j.Logger;
 
+// import static java.lang.System.out;
+
 /**
  * Provides methods to call the TinEye Services API methods that
  * are common across all of the TinEye Services APIs (excluding
  * the TinEye Commercial API).
  * <p>
- * Copyright (C) 2011-2012 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
  */
 public class TinEyeServiceRequest
 {
@@ -35,10 +37,10 @@ public class TinEyeServiceRequest
      * Construct a <code>TinEyeServiceRequest</code> instance to issue
      * HTTP requests to a specific TinEye Services API.
      *
-     * @param apiURL   The URL for a specific TinEye Services API
+     * @param apiURL   The URL for a specific TinEye Services API.
      *
-     * @throws NullPointerException   If the apiURL is null
-     * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws NullPointerException   If the apiURL is null.
+     * @throws URISyntaxException     If the apiURL is not a valid URL.
      */
     public TinEyeServiceRequest(String apiURL)
         throws NullPointerException, URISyntaxException
@@ -51,14 +53,14 @@ public class TinEyeServiceRequest
      * HTTP requests to a specific TinEye Services API using HTTP basic
      * authentication.
      *
-     * @param apiURL     The URL for a specific TinEye Services API
+     * @param apiURL     The URL for a specific TinEye Services API.
      * @param username   The username for HTTP basic authentication when
-     *                   connecting to the TinEye Services API
+     *                   connecting to the TinEye Services API.
      * @param password   The password for HTTP basic authentication when
-     *                   connecting to the TinEye Services API
+     *                   connecting to the TinEye Services API.
      *
-     * @throws NullPointerException   If the apiURL is null
-     * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws NullPointerException   If the apiURL is null.
+     * @throws URISyntaxException     If the apiURL is not a valid URL.
      */
     public TinEyeServiceRequest(String apiURL, String username, String password)
         throws NullPointerException, URISyntaxException
@@ -90,12 +92,12 @@ public class TinEyeServiceRequest
      *     <li><code>error</code>: Array of error messages if status is not <code>ok</code></li>
      * </ul>
      *
-     * @param filepaths   Filepaths of images to delete as returned by a search or list call
+     * @param filepaths   Filepaths of images to delete as returned by a search or list call.
      *
-     * @return The API JSON response with image deletion status
+     * @return The API JSON response with image deletion status.
      *
      * @throws TinEyeServiceException   If an exception occurs issuing the API <code>delete</code>
-     *                                  request or parsing the response
+     *                                  request or parsing the response.
      */
     public JSONObject delete(String[] filepaths)
         throws TinEyeServiceException
@@ -105,10 +107,13 @@ public class TinEyeServiceRequest
 
         try
         {
-            for(int i = 0; i < filepaths.length; i++)
+            int i = 0;
+            for(String filepath: filepaths)
             {
-                StringBody toDelete = new StringBody(filepaths[i]);
+                StringBody toDelete = new StringBody(filepath);
                 postEntity.addPart("filepaths[" + i + "]", toDelete);
+
+                i += 1;
             }
             responseJSON = postAPIRequest("delete", postEntity);
         }
@@ -134,7 +139,7 @@ public class TinEyeServiceRequest
      * @return The API JSON response with the hosted image collection image count.
      *
      * @throws TinEyeServiceException   If an exception occurs issuing the API <code>count</code>
-     *                                  request or parsing the response
+     *                                  request or parsing the response.
      */
     public JSONObject count()
         throws TinEyeServiceException
@@ -161,13 +166,13 @@ public class TinEyeServiceRequest
      *     <li><code>error</code>: Array of error messages if status is not <code>ok</code></li>
      * </ul>
      *
-     * @param offset   Offset from start of search results to return (starting from 0)
-     * @param limit    Maximum number of images to list
+     * @param offset   Offset from start of search results to return (starting from 0).
+     * @param limit    Maximum number of images to list.
      *
-     * @return The API JSON response with list of collection images
+     * @return The API JSON response with list of collection images.
      *
      * @throws TinEyeServiceException   If an exception occurs issuing the API <code>list</code>
-     *                                  request or parsing the response
+     *                                  request or parsing the response.
      */
     public JSONObject list(int offset, int limit)
         throws TinEyeServiceException
@@ -195,10 +200,10 @@ public class TinEyeServiceRequest
      *     <li><code>error</code>: Array of error messages if status is not <code>ok</code></li>
      * </ul>
      *
-     * @return The API JSON response with the server status
+     * @return The API JSON response with the server status.
      *
      * @throws TinEyeServiceException   If an exception occurs issuing the API <code>ping</code>
-     *                                  request or parsing the response
+     *                                  request or parsing the response.
      */
     public JSONObject ping()
         throws TinEyeServiceException
@@ -217,12 +222,12 @@ public class TinEyeServiceRequest
     /**
      * Helper method to issue an HTTP GET request to the specified API method.
      *
-     * @param method   The API method to issue the HTTP GET request to
+     * @param method   The API method to issue the HTTP GET request to.
      *
-     * @return The API JSON response returned by the API server
+     * @return The API JSON response returned by the API server.
      *
-     * @throws HttpUtilsException   If an exception occurs calling the API
-     * @throws JSONException        If an exception occurs converting the API response to JSON
+     * @throws HttpUtilsException   If an exception occurs calling the API.
+     * @throws JSONException        If an exception occurs converting the API response to a JSONObject.
      */
     protected JSONObject getAPIRequest(String method)
         throws HttpUtilsException, JSONException
@@ -235,13 +240,13 @@ public class TinEyeServiceRequest
      * with the given API method query parameters.
      *
      * @param method        The API method to issue the HTTP GET request to
-     * @param queryParams   Key-value pairs of request query parameters joined by &
+     * @param queryParams   Key-value pairs of request query parameters joined by &,
      *                      or null if there are no query parameters.
      *
-     * @return The API JSON response returned by the API server
+     * @return The API JSON response returned by the API server.
      *
-     * @throws HttpUtilsException   If an exception occurs calling the API
-     * @throws JSONException        If an exception occurs converting the API response to JSON
+     * @throws HttpUtilsException   If an exception occurs calling the API.
+     * @throws JSONException        If an exception occurs converting the API response to a JSONObject.
      */
     protected JSONObject getAPIRequest(String method, String queryParams)
         throws HttpUtilsException, JSONException
@@ -262,9 +267,13 @@ public class TinEyeServiceRequest
 
         JSONObject responseJSON = null;
 
+        // out.println(requestURL);
+        
         try
         {
-            responseJSON = (JSONObject)JSONSerializer.toJSON(httpHelper.doGet(requestURL));
+            String response = httpHelper.doGet(requestURL);
+            // out.println(response);
+            responseJSON = (JSONObject)JSONSerializer.toJSON(response);
         }
         catch (HttpUtilsException he)
         {
@@ -284,13 +293,13 @@ public class TinEyeServiceRequest
      * Helper method to issue an HTTP POST request to the specified API method
      * using the postRequest body.
      *
-     * @param method        The API method being called
-     * @param postRequest   The API POST request to send to the API
+     * @param method        The API method being called.
+     * @param postRequest   The API POST request to send to the API.
      *
-     * @return The JSON response returned by the API
+     * @return The JSON response returned by the API.
      *
-     * @throws HttpUtilsException   If an exception occurs calling the API
-     * @throws JSONException        If an exception occurs converting the API response to JSON
+     * @throws HttpUtilsException   If an exception occurs calling the API.
+     * @throws JSONException        If an exception occurs converting the API response to a JSONObject.
      */
     protected JSONObject postAPIRequest(String method, MultipartEntity postRequest)
         throws HttpUtilsException, JSONException
@@ -305,9 +314,20 @@ public class TinEyeServiceRequest
 
         JSONObject responseJSON = null;
 
+        // try
+        // {
+        //     postRequest.writeTo(out);
+        // }
+        // catch (Exception e)
+        // {
+        //     logger.error("Got exception printing POST request: " + e.toString());
+        // }
+
         try
         {
-            responseJSON = (JSONObject)JSONSerializer.toJSON(httpHelper.doPost(requestURL, postRequest));
+            String response = httpHelper.doPost(requestURL, postRequest);
+            // out.println(response);
+            responseJSON = (JSONObject)JSONSerializer.toJSON(response);
         }
         catch (HttpUtilsException he)
         {

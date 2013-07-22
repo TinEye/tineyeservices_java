@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  * Provides methods to call the TinEye Service API methods that
  * deal with searching and tagging images with metadata.
  * <p>
- * Copyright (C) 2011-2012 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
  */
 public class MetadataRequest extends TinEyeServiceRequest
 {
@@ -94,21 +94,24 @@ public class MetadataRequest extends TinEyeServiceRequest
 
         try
         {
-            for(int i = 0; i < images.length; i++)
+            int i = 0;
+            for(Image image: images)
             {
-                ByteArrayBody toAdd = new ByteArrayBody(images[i].getData(), images[i].getFilepath());
+                ByteArrayBody toAdd = new ByteArrayBody(image.getData(), image.getFilepath());
                 postEntity.addPart("images[" + i + "]", toAdd);
 
-                if (images[i].getFilepath() != null)
+                if (image.getFilepath() != null)
                 {
-                    postEntity.addPart("filepaths[" + i + "]", new StringBody(images[i].getFilepath()));
+                    postEntity.addPart("filepaths[" + i + "]", new StringBody(image.getFilepath()));
                 }
 
-                if (images[i].getMetadata() != null)
+                if (image.getMetadata() != null)
                 {
-                    StringBody metadataContent = new StringBody(images[i].getMetadata().toString());
+                    StringBody metadataContent = new StringBody(image.getMetadata().toString());
                     postEntity.addPart("metadata[" + i + "]", metadataContent);
                 }
+
+                i += 1;
             }
             postEntity.addPart("ignore_background",          new StringBody(Boolean.toString(ignoreBackground)));
             postEntity.addPart("ignore_interior_background", new StringBody(Boolean.toString(ignoreInteriorBackground)));
@@ -164,19 +167,22 @@ public class MetadataRequest extends TinEyeServiceRequest
 
         try
         {
-            for(int i = 0; i < images.length; i++)
+            int i = 0;
+            for(Image image: images)
             {
-                StringBody toAdd = new StringBody(images[i].getURL().toString());
+                StringBody toAdd = new StringBody(image.getURL().toString());
                 postEntity.addPart("urls[" + i + "]", toAdd);
 
-                toAdd = new StringBody(images[i].getCollectionFilepath());
+                toAdd = new StringBody(image.getCollectionFilepath());
                 postEntity.addPart("filepaths[" + i + "]", toAdd);
 
                 if (images[i].getMetadata() != null)
                 {
-                    toAdd = new StringBody(images[i].getMetadata().toString());
+                    toAdd = new StringBody(image.getMetadata().toString());
                     postEntity.addPart("metadata[" + i + "]", toAdd);
                 }
+
+                i += 1;
             }
             postEntity.addPart("ignore_background",          new StringBody(Boolean.toString(ignoreBackground)));
             postEntity.addPart("ignore_interior_background", new StringBody(Boolean.toString(ignoreInteriorBackground)));
@@ -222,9 +228,11 @@ public class MetadataRequest extends TinEyeServiceRequest
 
         try
         {
-            for(int i = 0; i < filepaths.length; i++)
+            int i = 0;
+            for(String filepath: filepaths)
             {
-                postEntity.addPart("filepaths[" + i + "]", new StringBody(filepaths[i]));
+                postEntity.addPart("filepaths[" + i + "]", new StringBody(filepath));
+                i += 1;
             }
             responseJSON = postAPIRequest("get_metadata", postEntity);
         }
@@ -356,7 +364,7 @@ public class MetadataRequest extends TinEyeServiceRequest
      * </ul>
      *
      * @param filepaths    Array of hosted image filepaths to update metadata for.
-     * @param metadata     The metadata entries to associate with each image filepath.
+     * @param metadata     The metadata entries to associate with each image filepath, respectively.
      *
      * @return The API JSON response.
      *
@@ -379,7 +387,6 @@ public class MetadataRequest extends TinEyeServiceRequest
             {
             	postEntity.addPart("filepaths[" + i + "]", new StringBody(filepaths[i]));
                 postEntity.addPart("metadata[" + i + "]",  new StringBody(metadata[i].toString()));
-                
             }
 
             responseJSON = postAPIRequest("update_metadata", postEntity);

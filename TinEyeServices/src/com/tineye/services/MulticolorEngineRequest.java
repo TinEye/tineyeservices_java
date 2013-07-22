@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * Provides methods to call the TinEye Service MulticolorEngine API methods.
  * <p>
- * Copyright (C) 2011-2012 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
  */
 public class MulticolorEngineRequest extends MetadataRequest
 {
@@ -276,20 +276,20 @@ public class MulticolorEngineRequest extends MetadataRequest
      *     <li><code>error</code>: Array of error messages if status is not <code>ok</code></li>
      * </ul>
      *
-     * @param colors             List of colors for searching thfor e collection
-     * @param weights            List of weights corresponding to the colors, or empty list
-     * @param metadata           Metadata to perform additional filtering on the search results
+     * @param colors             List of colors for searching thfor e collection.
+     * @param weights            List of weights corresponding to the colors, or empty list.
+     * @param metadata           Metadata to perform additional filtering on the search results.
      * @param returnMetadata     Metadata fields to return with each match,
-     *                           which can include sorting options
-     * @param sortMetadata       If true, sort results by metadata score instead of by match score
-     * @param minScore           Minimum score of search results to return
-     * @param offset             Offset from start of search results to return (starting from 0)
-     * @param limit              The maximum number of results to return
+     *                           which can include sorting options.
+     * @param sortMetadata       If true, sort results by metadata score instead of by match score.
+     * @param minScore           Minimum score of search results to return.
+     * @param offset             Offset from start of search results to return (starting from 0).
+     * @param limit              The maximum number of results to return.
      *
-     * @return The MulticolorEngine API JSON response with the color search results
+     * @return The MulticolorEngine API JSON response with the color search results.
      *
      * @throws TinEyeServiceException   If an exception occurs issuing the MulticolorEngine API
-     *                                  <code>color_search</code> request or parsing the response
+     *                                  <code>color_search</code> request or parsing the response.
      */
     public JSONObject searchColor(Color[] colors, float[] weights, JSONObject metadata,
                                   JSONArray returnMetadata, boolean sortMetadata,
@@ -302,17 +302,21 @@ public class MulticolorEngineRequest extends MetadataRequest
         try
         {
             // Store list of colors in hex format, and disgard
-            // the alpha component from each color (which by default is white)
-            for(int i = 0; i < colors.length; i++)
+            // the alpha component from each color (which by default is white).
+            int i = 0;
+            for(Color color: colors)
             {
-                String hexColor = Integer.toHexString(colors[i].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(color.getRGB()).substring(2);
                 postEntity.addPart("colors[" + i + "]", new StringBody(hexColor));
+                i += 1;
             }
 
-            // weights may be empty since they're optional
-            for(int j = 0; j < weights.length; j++)
+            // weights may be empty since they're optional.
+            int j = 0;
+            for(float weight: weights)
             {
-                postEntity.addPart("weights[" + j + "]", new StringBody(Float.toString(weights[j])));
+                postEntity.addPart("weights[" + j + "]", new StringBody(Float.toString(weight)));
+                j += 1;
             }
 
             postEntity = addExtraSearchOptions(postEntity, metadata, returnMetadata,
@@ -422,9 +426,11 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < images.length; i++)
+            int i = 0;
+            for(Image image: images)
             {
-                postEntity.addPart("images[" + i + "]", new ByteArrayBody(images[i].getData(), images[i].getFilepath()));
+                postEntity.addPart("images[" + i + "]", new ByteArrayBody(image.getData(), image.getFilepath()));
+                i += 1;
             }
             postEntity.addPart("limit",                      new StringBody(Integer.toString(limit)));
             postEntity.addPart("ignore_background",          new StringBody(Boolean.toString(ignoreBackground)));
@@ -484,9 +490,11 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < imageURLs.length; i++)
+            int i = 0;
+            for(String imageURL: imageURLs)
             {
-                postEntity.addPart("urls[" + i + "]", new StringBody(imageURLs[i]));
+                postEntity.addPart("urls[" + i + "]", new StringBody(imageURL));
+                i += 1;
             }
             postEntity.addPart("limit",                      new StringBody(Integer.toString(limit)));
             postEntity.addPart("ignore_background",          new StringBody(Boolean.toString(ignoreBackground)));
@@ -543,9 +551,11 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < filepaths.length; i++)
+            int i = 0;
+            for(String filepath: filepaths)
             {
-                postEntity.addPart("filepaths[" + i + "]", new StringBody(filepaths[i]));
+                postEntity.addPart("filepaths[" + i + "]", new StringBody(filepath));
+                i += 1;
             }
             postEntity.addPart("limit",        new StringBody(Integer.toString(limit)));
             postEntity.addPart("color_format", new StringBody(colorFormat));
@@ -696,7 +706,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      * </ul>
      *
      * @param colors         Array of colors used to filter the results.
-     * @param weights        Array of color weights used to filter the results.
+     * @param weights        Array of color weights used to filter the results. May be empty.
      * @param limit          The maximum number of colors to be extracted
      * @param colorFormat    To be returned, must be either rgb or hex
      *
@@ -712,18 +722,24 @@ public class MulticolorEngineRequest extends MetadataRequest
         MultipartEntity postEntity = new MultipartEntity();
         JSONObject responseJSON = null;
 
+        if (weights.length > 0 && colors.length != weights.length)
+            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");   
+        
         try
         {
-            for(int i = 0; i < colors.length; i++)
+            int i = 0;
+            for(Color color: colors)
             {
-                String hexColor = Integer.toHexString(colors[i].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(color.getRGB()).substring(2);
                 postEntity.addPart("colors[" + i + "]", new StringBody(hexColor));
 
-                // weights must be the same length as the colors if the weights list is not empty.
+                // weights must be the same length as colors if the weights list is not empty.
                 if (weights.length > 0)
                 {
                     postEntity.addPart("weights[" + i + "]", new StringBody(Float.toString(weights[i])));
                 }
+
+                i += 1;
             }
             postEntity.addPart("limit",        new StringBody(Integer.toString(limit)));
             postEntity.addPart("color_format", new StringBody(colorFormat));
@@ -784,15 +800,19 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < images.length; i++)
+            int i = 0;
+            for(Image image: images)
             {
-                postEntity.addPart("images[" + i + "]", new ByteArrayBody(images[i].getData(), images[i].getFilepath()));
+                postEntity.addPart("images[" + i + "]", new ByteArrayBody(image.getData(), image.getFilepath()));
+                i += 1;
             }
 
-            for(int j = 0; j < countColors.length; j++)
+            int j = 0;
+            for(Color countColor: countColors)
             {
-                String hexColor = Integer.toHexString(countColors[j].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(countColor.getRGB()).substring(2);
                 postEntity.addPart("count_colors[" + j + "]", new StringBody(hexColor));
+                j += 1;
             }
             postEntity.addPart("ignore_background",          new StringBody(Boolean.toString(ignoreBackground)));
             postEntity.addPart("ignore_interior_background", new StringBody(Boolean.toString(ignoreInteriorBackground)));
@@ -852,15 +872,19 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < imageURLs.length; i++)
+            int i = 0;
+            for(String imageURL: imageURLs)
             {
-                postEntity.addPart("urls[" + i + "]", new StringBody(imageURLs[i]));
+                postEntity.addPart("urls[" + i + "]", new StringBody(imageURL));
+                i += 1;
             }
 
-            for(int j = 0; j < countColors.length; j++)
+            int j = 0;
+            for(Color countColor: countColors)
             {
-                String hexColor = Integer.toHexString(countColors[j].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(countColor.getRGB()).substring(2);
                 postEntity.addPart("count_colors[" + j + "]", new StringBody(hexColor));
+                j += 1;
             }
             postEntity.addPart("ignore_background",          new StringBody(Boolean.toString(ignoreBackground)));
             postEntity.addPart("ignore_interior_background", new StringBody(Boolean.toString(ignoreInteriorBackground)));
@@ -913,15 +937,19 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < filepaths.length; i++)
+            int i = 0;
+            for(String filepath: filepaths)
             {
-                postEntity.addPart("filepaths[" + i + "]", new StringBody(filepaths[i]));
+                postEntity.addPart("filepaths[" + i + "]", new StringBody(filepath));
+                i += 1;
             }
 
-            for(int j = 0; j < countColors.length; j++)
+            int j = 0;
+            for(Color countColor: countColors)
             {
-                String hexColor = Integer.toHexString(countColors[j].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(countColor.getRGB()).substring(2);
                 postEntity.addPart("count_colors[" + j + "]", new StringBody(hexColor));
+                j += 1;
             }
 
             responseJSON = postAPIRequest("count_collection_colors", postEntity);
@@ -979,10 +1007,12 @@ public class MulticolorEngineRequest extends MetadataRequest
                 postEntity.addPart("metadata", new StringBody(metadata.toString()));
             }
 
-            for(int i = 0; i < countColors.length; i++)
+            int i = 0;
+            for(Color countColor: countColors)
             {
-                String hexColor = Integer.toHexString(countColors[i].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(countColor.getRGB()).substring(2);
                 postEntity.addPart("count_colors[" + i + "]", new StringBody(hexColor));
+                i += 1;
             }
 
             responseJSON = postAPIRequest("count_collection_colors", postEntity);
@@ -1032,10 +1062,12 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int j = 0; j < countColors.length; j++)
+            int i = 0;
+            for(Color countColor: countColors)
             {
-                String hexColor = Integer.toHexString(countColors[j].getRGB()).substring(2);
-                postEntity.addPart("count_colors[" + j + "]", new StringBody(hexColor));
+                String hexColor = Integer.toHexString(countColor.getRGB()).substring(2);
+                postEntity.addPart("count_colors[" + i + "]", new StringBody(hexColor));
+                i += 1;
             }
 
             responseJSON = postAPIRequest("count_collection_colors", postEntity);
@@ -1074,7 +1106,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      * </ul>
      *
      * @param colors        Array of colors to filter image collection
-     * @param weights       Array of color weights to filter image collection
+     * @param weights       Array of color weights to filter image collection. May be empty.
      * @param countColors   The palette of colors to count in the filtered image collection
      *
      * @return The MulticolorEngine API JSON response with the count of the palette colors in the
@@ -1090,24 +1122,32 @@ public class MulticolorEngineRequest extends MetadataRequest
         MultipartEntity postEntity = new MultipartEntity();
         JSONObject responseJSON = null;
 
+        if (weights.length > 0 && colors.length != weights.length)
+            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");   
+        
         try
         {
-            for(int i = 0; i < colors.length; i++)
+            int i = 0;
+            for(Color color: colors)
             {
-                String hexColor = Integer.toHexString(colors[i].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(color.getRGB()).substring(2);
                 postEntity.addPart("colors[" + i + "]", new StringBody(hexColor));
 
-                // weights must be the same length as the colors if the weights list is not empty.
+                // weights must be the same length as colors if the weights list is not empty.
                 if (weights.length > 0)
                 {
                     postEntity.addPart("weights[" + i + "]", new StringBody(Float.toString(weights[i])));
                 }
+
+                i += 1;
             }
 
-            for(int j = 0; j < countColors.length; j++)
+            int j = 0;
+            for(Color countColor: countColors)
             {
-                String hexColor = Integer.toHexString(countColors[j].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(countColor.getRGB()).substring(2);
                 postEntity.addPart("count_colors[" + j + "]", new StringBody(hexColor));
+                j += 1;
             }
 
             responseJSON = postAPIRequest("count_collection_colors", postEntity);
@@ -1121,7 +1161,7 @@ public class MulticolorEngineRequest extends MetadataRequest
     }
 
     /**
-     * Given one of more metadata queries, get a counter for each query specifying how many
+     * Given one or more metadata queries, get a counter for each query specifying how many
      * of the collection images match the query.
      * <p>
      * Returns the MulticolorEngine API JSON response with the following fields:
@@ -1151,9 +1191,11 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < countMetadata.length; i++)
+            int i = 0;
+            for(JSONObject countMeta: countMetadata)
             {
-                postEntity.addPart("count_metadata[" + i + "]", new StringBody(countMetadata[i].toString()));
+                postEntity.addPart("count_metadata[" + i + "]", new StringBody(countMeta.toString()));
+                i += 1;
             }
             responseJSON = postAPIRequest("count_metadata", postEntity);
         }
@@ -1166,7 +1208,7 @@ public class MulticolorEngineRequest extends MetadataRequest
     }
 
     /**
-     * Given one of more metadata queries, get a counter for each query specifying how many
+     * Given one or more metadata queries, get a counter for each query specifying how many
      * of the collection images match the query. The images counted in the results may
      * be filtered using json metadata.
      * <p>
@@ -1201,9 +1243,11 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < countMetadata.length; i++)
+            int i = 0;
+            for(JSONObject countMeta: countMetadata)
             {
-                postEntity.addPart("count_metadata[" + i + "]", new StringBody(countMetadata[i].toString()));
+                postEntity.addPart("count_metadata[" + i + "]", new StringBody(countMeta.toString()));
+                i += 1;
             }
             postEntity.addPart("metadata", new StringBody(metadata.toString()));
 
@@ -1254,18 +1298,24 @@ public class MulticolorEngineRequest extends MetadataRequest
         MultipartEntity postEntity = new MultipartEntity();
         JSONObject responseJSON = null;
 
+        if (weights.length > 0 && colors.length != weights.length)
+            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");   
+        
         try
         {
-            for(int i = 0; i < countMetadata.length; i++)
+            int i = 0;
+            for(JSONObject metaData: countMetadata)
             {
-                postEntity.addPart("count_metadata[" + i + "]", new StringBody(countMetadata[i].toString()));
+                postEntity.addPart("count_metadata[" + i + "]", new StringBody(metaData.toString()));
+                i += 1;
             }
 
             // Store list of colors in hex format, and disgard
             // the alpha component from each color (which by default is white)
-            for(int j = 0; j < colors.length; j++)
+            int j = 0;
+            for(Color color: colors)
             {
-                String hexColor = Integer.toHexString(colors[j].getRGB()).substring(2);
+                String hexColor = Integer.toHexString(color.getRGB()).substring(2);
                 postEntity.addPart("colors[" + j + "]", new StringBody(hexColor));
 
                 // weights must be the same length as the colors if the weights list is not empty.
@@ -1273,6 +1323,8 @@ public class MulticolorEngineRequest extends MetadataRequest
                 {
                     postEntity.addPart("weights[" + j + "]", new StringBody(Float.toString(weights[j])));
                 }
+
+                j += 1;
             }
 
             responseJSON = postAPIRequest("count_metadata", postEntity);
@@ -1317,14 +1369,18 @@ public class MulticolorEngineRequest extends MetadataRequest
 
         try
         {
-            for(int i = 0; i < countMetadata.length; i++)
+            int i = 0;
+            for(JSONObject countMeta: countMetadata)
             {
-                postEntity.addPart("count_metadata[" + i + "]", new StringBody(countMetadata[i].toString()));
+                postEntity.addPart("count_metadata[" + i + "]", new StringBody(countMeta.toString()));
+                i += 1;
             }
 
-            for(int j = 0; j < filepaths.length; j++)
+            int j = 0; 
+            for(String filepath: filepaths)
             {
-                postEntity.addPart("filepaths[" + j + "]", new StringBody(filepaths[j]));
+                postEntity.addPart("filepaths[" + j + "]", new StringBody(filepath));
+                j += 1;
             }
 
             responseJSON = postAPIRequest("count_metadata", postEntity);

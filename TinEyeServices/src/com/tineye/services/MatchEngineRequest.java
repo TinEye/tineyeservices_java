@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  * For a list of available MatchEngine API methods, refer
  * to the documentation for your MatchEngine API installation.
  * <p>
- * Copyright (C) 2011-2012 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
  */
 public class MatchEngineRequest extends TinEyeServiceRequest
 {
@@ -88,16 +88,19 @@ public class MatchEngineRequest extends TinEyeServiceRequest
 
         try
         {
-            for(int i = 0; i < images.length; i++)
+            int i = 0;
+            for(Image image: images)
             {
-                ByteArrayBody imageToAdd = new ByteArrayBody(images[i].getData(), images[i].getFilepath());
+                ByteArrayBody imageToAdd = new ByteArrayBody(image.getData(), image.getFilepath());
                 postEntity.addPart("images[" + i + "]", imageToAdd);
 
-                if (images[i].getCollectionFilepath() != null)
+                if (image.getCollectionFilepath() != null)
                 {
-                    StringBody filepathToAdd = new StringBody(images[i].getCollectionFilepath());
+                    StringBody filepathToAdd = new StringBody(image.getCollectionFilepath());
                     postEntity.addPart("filepaths[" + i + "]", filepathToAdd);
                 }
+
+                i += 1;
             }
             responseJSON = postAPIRequest("add", postEntity);
         }
@@ -138,13 +141,16 @@ public class MatchEngineRequest extends TinEyeServiceRequest
 
         try
         {
-            for(int i = 0; i < images.length; i++)
+            int i = 0;
+            for(Image image: images)
             {
-                StringBody toAdd = new StringBody(images[i].getURL().toString());
+                StringBody toAdd = new StringBody(image.getURL().toString());
                 postEntity.addPart("urls[" + i + "]", toAdd);
 
-                toAdd = new StringBody(images[i].getCollectionFilepath());
+                toAdd = new StringBody(image.getCollectionFilepath());
                 postEntity.addPart("filepaths[" + i + "]", toAdd);
+
+                i += 1;
             }
             responseJSON = postAPIRequest("add", postEntity);
         }

@@ -276,7 +276,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      *     <li><code>error</code>: Array of error messages if status is not <code>ok</code></li>
      * </ul>
      *
-     * @param colors             List of colors for searching thfor e collection.
+     * @param colors             List of colors for searching the collection.
      * @param weights            List of weights corresponding to the colors, or empty list.
      * @param metadata           Metadata to perform additional filtering on the search results.
      * @param returnMetadata     Metadata fields to return with each match,

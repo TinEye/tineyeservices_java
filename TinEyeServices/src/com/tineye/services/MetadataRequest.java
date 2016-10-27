@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  * Provides methods to call the TinEye Service API methods that
  * deal with searching and tagging images with metadata.
  * <p>
- * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2016 Idée Inc. All rights reserved worldwide.
  */
 public class MetadataRequest extends TinEyeServiceRequest
 {
@@ -29,9 +29,10 @@ public class MetadataRequest extends TinEyeServiceRequest
      *
      * @throws NullPointerException   If the apiURL is null
      * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public MetadataRequest(String apiURL)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         super(apiURL, null, null);
     }
@@ -49,9 +50,10 @@ public class MetadataRequest extends TinEyeServiceRequest
      *
      * @throws NullPointerException   If the apiURL is null
      * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public MetadataRequest(String apiURL, String username, String password)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         super(apiURL, username, password);
     }
@@ -349,7 +351,7 @@ public class MetadataRequest extends TinEyeServiceRequest
 
         return postEntity;
     }
-    
+
     /**
      * Update the metadata for a list of images already present in the hosted image collection.
      * <p>
@@ -372,17 +374,17 @@ public class MetadataRequest extends TinEyeServiceRequest
      *                                  <code>update_metadata</code> request or parsing
      *                                  the response
      */
-    public JSONObject updateMetadata(String[] filepaths, JSONObject[] metadata) 
+    public JSONObject updateMetadata(String[] filepaths, JSONObject[] metadata)
     	throws TinEyeServiceException
-    {   	
+    {
     	MultipartEntity postEntity = new MultipartEntity();
         JSONObject responseJSON = null;
 
         try
         {
         	if (filepaths.length != metadata.length)
-    			throw new TinEyeServiceException("filepaths and metadata list must have the same number of entries");	
-    		
+    			throw new TinEyeServiceException("filepaths and metadata list must have the same number of entries");
+
             for(int i = 0; i < filepaths.length; i++)
             {
             	postEntity.addPart("filepaths[" + i + "]", new StringBody(filepaths[i]));

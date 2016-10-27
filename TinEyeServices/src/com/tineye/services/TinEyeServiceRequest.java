@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  * are common across all of the TinEye Services APIs (excluding
  * the TinEye Commercial API).
  * <p>
- * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2016 Idée Inc. All rights reserved worldwide.
  */
 public class TinEyeServiceRequest
 {
@@ -39,11 +39,12 @@ public class TinEyeServiceRequest
      *
      * @param apiURL   The URL for a specific TinEye Services API.
      *
-     * @throws NullPointerException   If the apiURL is null.
-     * @throws URISyntaxException     If the apiURL is not a valid URL.
+     * @throws NullPointerException   If the apiURL is null
+     * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public TinEyeServiceRequest(String apiURL)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         this(apiURL, null, null);
     }
@@ -59,23 +60,18 @@ public class TinEyeServiceRequest
      * @param password   The password for HTTP basic authentication when
      *                   connecting to the TinEye Services API.
      *
-     * @throws NullPointerException   If the apiURL is null.
-     * @throws URISyntaxException     If the apiURL is not a valid URL.
+     * @throws NullPointerException   If the apiURL is null
+     * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public TinEyeServiceRequest(String apiURL, String username, String password)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         // All API URLs have to end with /rest/ or else the URL is incorrect.
-        // It also helps if we need to add query parameters to the URL for
-        // GET requests.
-        if (!apiURL.endsWith("/"))
-        {
-            this.apiURL = apiURL + "/";
+        if (!apiURL.endsWith("/rest/")) {
+            throw new TinEyeServiceException("The API URL '" + apiURL + "' must end with /rest/");
         }
-        else
-        {
-            this.apiURL = apiURL;
-        }
+        this.apiURL = apiURL;
         this.username = username;
         this.password = password;
         this.host = new URI(apiURL).getHost();
@@ -268,7 +264,7 @@ public class TinEyeServiceRequest
         JSONObject responseJSON = null;
 
         // out.println(requestURL);
-        
+
         try
         {
             String response = httpHelper.doGet(requestURL);

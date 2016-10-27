@@ -2,10 +2,10 @@ Java library for TinEye Services
 ================================
 
 **TinEyeServices** is a Java library for the MatchEngine, MobileEngine,
-and MulticolorEngine APIs. MatchEngine, MobileEngine and MulticolorEngine
-are general image matching engines that allow you to perform large
-scale image comparisons for a variety of tasks.
-See `<http://services.tineye.com/>`_ for more information.
+MulticolorEngine and WineEngine APIs. MatchEngine, MobileEngine,
+MulticolorEngine and WineEngine are general image matching engines that allow
+you to perform large scale image comparisons for a variety of tasks.
+See `<https://services.tineye.com/>`_ for more information.
 
 Dependencies
 ============
@@ -45,7 +45,7 @@ It depends on a number of external jars which are listed below::
 Documentation
 -------------
 
-View `documentation <http://services.tineye.com/library/java/docs/>`_.
+View `documentation <https://services.tineye.com/library/java/docs/>`_.
 
 Support
 -------

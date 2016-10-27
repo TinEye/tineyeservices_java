@@ -15,7 +15,7 @@ import org.apache.log4j.Logger;
  * For a list of available MatchEngine API methods, refer
  * to the documentation for your MatchEngine API installation.
  * <p>
- * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2016 Idée Inc. All rights reserved worldwide.
  */
 public class MatchEngineRequest extends TinEyeServiceRequest
 {
@@ -29,9 +29,10 @@ public class MatchEngineRequest extends TinEyeServiceRequest
      *
      * @throws NullPointerException   If the apiURL is null
      * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public MatchEngineRequest(String apiURL)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         super(apiURL, null, null);
     }
@@ -48,9 +49,10 @@ public class MatchEngineRequest extends TinEyeServiceRequest
      *
      * @throws NullPointerException   If the apiURL is null
      * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public MatchEngineRequest(String apiURL, String username, String password)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         super(apiURL, username, password);
     }

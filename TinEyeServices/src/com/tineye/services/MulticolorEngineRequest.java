@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 /**
  * Provides methods to call the TinEye Service MulticolorEngine API methods.
  * <p>
- * Copyright (C) 2011-2013 Idee Inc. All rights reserved worldwide.
+ * Copyright (C) 2011-2016 Idée Inc. All rights reserved worldwide.
  */
 public class MulticolorEngineRequest extends MetadataRequest
 {
@@ -28,9 +28,10 @@ public class MulticolorEngineRequest extends MetadataRequest
      *
      * @throws NullPointerException   If the apiURL is null
      * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public MulticolorEngineRequest(String apiURL)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         super(apiURL, null, null);
     }
@@ -47,9 +48,10 @@ public class MulticolorEngineRequest extends MetadataRequest
      *
      * @throws NullPointerException   If the apiURL is null
      * @throws URISyntaxException     If the apiURL is not a valid URL
+     * @throws TinEyeServiceException If the apiURL does not end with /rest/
      */
     public MulticolorEngineRequest(String apiURL, String username, String password)
-        throws NullPointerException, URISyntaxException
+        throws NullPointerException, URISyntaxException, TinEyeServiceException
     {
         super(apiURL, username, password);
     }
@@ -162,7 +164,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      */
     public JSONObject searchFilepath(String filepath, JSONObject metadata,
                                      JSONArray returnMetadata, boolean sortMetadata,
-                                     boolean ignoreBackground, boolean ignoreInteriorBackground, 
+                                     boolean ignoreBackground, boolean ignoreInteriorBackground,
                                           int minScore, int offset, int limit)
         throws TinEyeServiceException
     {
@@ -186,7 +188,7 @@ public class MulticolorEngineRequest extends MetadataRequest
             throw new TinEyeServiceException("'searchFilepath' failed", e);
         }
         return responseJSON;
-        
+
     }
 
     /**
@@ -361,7 +363,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      * @throws TinEyeServiceException   If an exception occurs issuing the MulticolorEngine API
      *                                  <code>color_search</code> request or parsing the response
      */
-    public JSONObject searchMetadata(JSONObject metadata, JSONArray returnMetadata, 
+    public JSONObject searchMetadata(JSONObject metadata, JSONArray returnMetadata,
     		                         boolean sortMetadata, int minScore, int offset, int limit)
         throws TinEyeServiceException
     {
@@ -372,7 +374,7 @@ public class MulticolorEngineRequest extends MetadataRequest
         {
 			postEntity = addExtraSearchOptions(postEntity, metadata, returnMetadata,
 			                                   sortMetadata, minScore, offset, limit);
-			
+
 			responseJSON = postAPIRequest("color_search", postEntity);
 		}
 		catch (Exception e)
@@ -382,7 +384,7 @@ public class MulticolorEngineRequest extends MetadataRequest
 		}
         return responseJSON;
     }
-    
+
     /**
      * Extract the dominant colors from the images passed in.
      * <p>
@@ -417,7 +419,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      * @throws TinEyeServiceException   If an exception occurs issuing the MulticolorEngine API
      *                                  <code>extract_image_colors</code> request or parsing the response
      */
-    public JSONObject extractImageColorsImage(Image[] images, int limit, boolean ignoreBackground, 
+    public JSONObject extractImageColorsImage(Image[] images, int limit, boolean ignoreBackground,
     		                                  boolean ignoreInteriorBackground, String colorFormat)
         throws TinEyeServiceException
     {
@@ -446,7 +448,7 @@ public class MulticolorEngineRequest extends MetadataRequest
         }
         return responseJSON;
     }
-    
+
     /**
      * Extract the dominant colors from images at the given URLs.
      * <p>
@@ -481,7 +483,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      * @throws TinEyeServiceException   If an exception occurs issuing the MulticolorEngine API
      *                                  <code>extract_image_colors</code> request or parsing the response
      */
-    public JSONObject extractImageColorsURL(String[] imageURLs, int limit, boolean ignoreBackground, 
+    public JSONObject extractImageColorsURL(String[] imageURLs, int limit, boolean ignoreBackground,
     		                                boolean ignoreInteriorBackground, String colorFormat)
         throws TinEyeServiceException
     {
@@ -677,7 +679,7 @@ public class MulticolorEngineRequest extends MetadataRequest
         }
         return responseJSON;
     }
-    
+
     /**
      * Extract the dominant colors in the hosted image collection filtered by colors.
      * The colors passed in are used to get a set of images that have those colors, and
@@ -723,8 +725,8 @@ public class MulticolorEngineRequest extends MetadataRequest
         JSONObject responseJSON = null;
 
         if (weights.length > 0 && colors.length != weights.length)
-            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");   
-        
+            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");
+
         try
         {
             int i = 0;
@@ -791,7 +793,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      *                                  <code>count_image_colors</code> request or parsing
      *                                  the response
      */
-    public JSONObject countImageColorsImage(Image[] images, Color[] countColors, 
+    public JSONObject countImageColorsImage(Image[] images, Color[] countColors,
     		                                boolean ignoreBackground, boolean ignoreInteriorBackground)
         throws TinEyeServiceException
     {
@@ -863,7 +865,7 @@ public class MulticolorEngineRequest extends MetadataRequest
      *                                  <code>count_image_colors</code> request or parsing
      *                                  the response
      */
-    public JSONObject countImageColorsURL(String[] imageURLs, Color[] countColors, 
+    public JSONObject countImageColorsURL(String[] imageURLs, Color[] countColors,
     		                              boolean ignoreBackground, boolean ignoreInteriorBackground)
         throws TinEyeServiceException
     {
@@ -1026,7 +1028,7 @@ public class MulticolorEngineRequest extends MetadataRequest
     }
 
     /**
-     * Get counts for each color specified in a color palette (list of colors) from the 
+     * Get counts for each color specified in a color palette (list of colors) from the
      * hosted image collection.
      * <p>
      * Returns the MulticolorEngine API JSON response with the following fields:
@@ -1079,7 +1081,7 @@ public class MulticolorEngineRequest extends MetadataRequest
         }
         return responseJSON;
     }
-    
+
     /**
      * Filter images in the hosted image collection by color and then get counts for
      * each color specified in a color palette (list of colors) from the filtered image list.
@@ -1123,8 +1125,8 @@ public class MulticolorEngineRequest extends MetadataRequest
         JSONObject responseJSON = null;
 
         if (weights.length > 0 && colors.length != weights.length)
-            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");   
-        
+            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");
+
         try
         {
             int i = 0;
@@ -1237,9 +1239,9 @@ public class MulticolorEngineRequest extends MetadataRequest
     {
         if (metadata == null)
         	return this.countMetadata(countMetadata);
-        
+
         MultipartEntity postEntity = new MultipartEntity();
-        JSONObject responseJSON = null;       
+        JSONObject responseJSON = null;
 
         try
         {
@@ -1299,8 +1301,8 @@ public class MulticolorEngineRequest extends MetadataRequest
         JSONObject responseJSON = null;
 
         if (weights.length > 0 && colors.length != weights.length)
-            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");   
-        
+            throw new TinEyeServiceException("colors and weights lists must have the same number of entries");
+
         try
         {
             int i = 0;
@@ -1376,7 +1378,7 @@ public class MulticolorEngineRequest extends MetadataRequest
                 i += 1;
             }
 
-            int j = 0; 
+            int j = 0;
             for(String filepath: filepaths)
             {
                 postEntity.addPart("filepaths[" + j + "]", new StringBody(filepath));

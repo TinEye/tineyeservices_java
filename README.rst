@@ -1,3 +1,12 @@
+DEPRECATED
+==========
+
+The `TinEye Services <https://services.tineye.com/>`_ libraries will not be maintained in the future.
+The current recommended best practice is to access the APIs using an HTTP
+library native to the language of your choice.
+The `TinEye Developer Documentation <https://services.tineye.com/developers/>`_ 
+includes interactive code examples for all API calls to help you get started.
+
 Java library for TinEye Services
 ================================
 
